@@ -5,13 +5,16 @@ import { AppModule } from './app.module.js';
 import * as helmetNs from 'helmet';
 
 // Compatible CommonJS et ESM : récupère la vraie fonction helmet
-const helmet: () => any = (helmetNs as any).default ?? (helmetNs as any);
+const helmet: (options?: any) => any = (helmetNs as any).default ?? (helmetNs as any);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Protection des en-têtes HTTP avec Helmet
-  app.use(helmet());
+  // Activation de CORS
+  app.enableCors();
+
+  // Protection des en-têtes HTTP avec Helmet (CSP désactivé pour Swagger UI)
+  app.use(helmet({ contentSecurityPolicy: false }));
 
   // Validation globale des données entrantes
   app.useGlobalPipes(
@@ -35,7 +38,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 Application prête et à l'écoute sur le port ${port}`);
 }
 
 void bootstrap();
