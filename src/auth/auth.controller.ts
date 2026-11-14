@@ -33,12 +33,9 @@ export class AuthController {
       loginDto.password,
     );
   }
-      @ApiBearerAuth()
-    @Get('profile')
-    @UseGuards(JwtAuthGuard)
-
-  @Get('profile')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @Get('profile')
   getProfile(@Req() request: Request & { user: any }) {
     return request.user;
   }
