@@ -11,6 +11,7 @@ import { AuthService } from './auth.service.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -32,6 +33,10 @@ export class AuthController {
       loginDto.password,
     );
   }
+      @ApiBearerAuth()
+    @Get('profile')
+    @UseGuards(JwtAuthGuard)
+
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   getProfile(@Req() request: Request & { user: any }) {

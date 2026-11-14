@@ -16,12 +16,15 @@ export class CreateEventDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(1000)
   description?: string;
 
   @IsDateString()
+  @IsNotEmpty()
   startDate: string;
 
   @IsDateString()
+  @IsNotEmpty()
   endDate: string;
 
   @IsString()
