@@ -16,13 +16,21 @@ import { RegistrationsModule } from './registrations/registrations.module.js';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        url: config.get<string>('DATABASE_URL'),
-        ssl: { rejectUnauthorized: false },
-        autoLoadEntities: true,
-        synchronize: false,
-      }),
+      useFactory: (config: ConfigService) => {
+        const url = config.get<string>('DATABASE_URL');
+        if (!url) {
+          console.error('❌ ERREUR: DATABASE_URL est absente des variables d environnement Vercel !');
+        } else {
+          console.log('✅ DATABASE_URL détectée:', url.replace(/:[^:@]+@/, ':***@'));
+        }
+        return {
+          type: 'postgres',
+          url,
+          ssl: { rejectUnauthorized: false },
+          autoLoadEntities: true,
+          synchronize: false,
+        };
+      },
     }),
          UsersModule,
       AuthModule,
