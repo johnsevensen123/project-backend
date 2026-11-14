@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+import 'pg';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -47,10 +49,23 @@ async function bootstrap() {
 }
 
 export default async function handler(req, res) {
-  // Préserver l'URL d'origine si Vercel réécrit vers /api
-  if (req.url === '/api' && req.headers['x-matched-path'] && req.headers['x-matched-path'] !== '/api') {
-    req.url = req.headers['x-matched-path'];
+  try {
+    // Préserver l'URL d'origine si Vercel réécrit vers /api
+    if (req.url === '/api' && req.headers['x-matched-path'] && req.headers['x-matched-path'] !== '/api') {
+      req.url = req.headers['x-matched-path'];
+    }
+    const server = await bootstrap();
+    return server(req, res);
+  } catch (err) {
+    console.error('SERVERLESS BOOTSTRAP ERROR:', err);
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(
+      JSON.stringify({
+        error: 'SERVERLESS_BOOTSTRAP_ERROR',
+        message: err.message,
+        stack: err.stack,
+      }),
+    );
   }
-  const server = await bootstrap();
-  return server(req, res);
 }
