@@ -55,7 +55,14 @@ export default async function handler(req, res) {
       req.url = req.headers['x-matched-path'];
     }
     const server = await bootstrap();
-    return server(req, res);
+
+    // Attendre la fin de la réponse Express avant de clore la fonction Vercel
+    return new Promise((resolve, reject) => {
+      res.on('finish', resolve);
+      res.on('close', resolve);
+      res.on('error', reject);
+      server(req, res);
+    });
   } catch (err) {
     console.error('SERVERLESS BOOTSTRAP ERROR:', err);
     res.statusCode = 500;
