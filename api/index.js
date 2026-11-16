@@ -58,6 +58,13 @@ async function bootstrap() {
 }
 
 export default async function handler(req, res) {
+  // Test de diagnostic immédiat
+  if (req.url === '/ping' || req.url === '/api/ping') {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    return res.end('pong');
+  }
+
   try {
     // Préserver l'URL d'origine si Vercel réécrit vers /api
     if (req.url === '/api' && req.headers['x-matched-path'] && req.headers['x-matched-path'] !== '/api') {

@@ -1,0 +1,17 @@
+import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/users.service.js';
+export declare class AuthService {
+    private readonly usersService;
+    private readonly jwtService;
+    constructor(usersService: UsersService, jwtService: JwtService);
+    register(email: string, password: string, name: string): Promise<{
+        id: string;
+        email: string;
+        name: string;
+        events: import("typeorm").Relation<import("../events/event.entity.js").Event[]>;
+        registrations: import("typeorm").Relation<import("../registrations/registration.entity.js").Registration[]>;
+    }>;
+    login(email: string, password: string): Promise<{
+        access_token: string;
+    }>;
+}
