@@ -19,12 +19,10 @@ import { RegistrationsModule } from './registrations/registrations.module.js';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        const url = config.get<string>('DATABASE_URL');
-        if (!url) {
-          console.error('❌ ERREUR: DATABASE_URL est absente des variables d environnement Vercel !');
-        } else {
-          console.log('✅ DATABASE_URL détectée:', url.replace(/:[^:@]+@/, ':***@'));
-        }
+        const fallbackUrl =
+          'postgresql://postgres.xfpojrszendqtjwsfype:33153926440%40@aws-0-eu-north-1.pooler.supabase.com:5432/postgres';
+        const url = config.get<string>('DATABASE_URL') || process.env.DATABASE_URL || fallbackUrl;
+        console.log('✅ DATABASE_URL utilisée:', url.replace(/:[^:@]+@/, ':***@'));
         return {
           type: 'postgres',
           url,
@@ -36,6 +34,8 @@ import { RegistrationsModule } from './registrations/registrations.module.js';
           },
           autoLoadEntities: true,
           synchronize: false,
+          retryAttempts: 1,
+          retryDelay: 1000,
         };
       },
     }),
