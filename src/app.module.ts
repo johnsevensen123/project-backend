@@ -1,3 +1,5 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 import 'reflect-metadata';
 import 'pg';
 import { Module } from '@nestjs/common';
@@ -27,6 +29,11 @@ import { RegistrationsModule } from './registrations/registrations.module.js';
           type: 'postgres',
           url,
           ssl: { rejectUnauthorized: false },
+          extra: {
+            ssl: {
+              rejectUnauthorized: false,
+            },
+          },
           autoLoadEntities: true,
           synchronize: false,
         };
